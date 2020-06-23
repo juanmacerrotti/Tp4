@@ -3,7 +3,6 @@
 #include <string.h>
 #include "../inc/LinkedList.h"
 
-
 static Node* getNode(LinkedList* this, int nodeIndex);
 static int addNode(LinkedList* this, int nodeIndex,void* pElement);
 
@@ -61,21 +60,24 @@ static Node* getNode(LinkedList* this, int nodeIndex)
 	if(this != NULL && nodeIndex < ll_len(this) && nodeIndex >=0)
 	{
 		pNodo=this->pFirstNode;
-		if(nodeIndex == 0) // si es el primero queda con la direccion del primer nodo.
+		do
 		{
-			 return pNodo;
-		}
-		else
-		{
-			do
+			if(indice == nodeIndex)
 			{
-			 pNodo=pNodo->pNextNode; // direccion de memoria del
-			indice ++;
-			}while(indice != nodeIndex);
-		}
+				break;
+			}
+			else
+			{
+				pNodo=pNodo->pNextNode;
+				indice ++;
+			}
+		}while(pNodo != NULL);
 	}
-
-	 return pNodo;
+	else
+	{
+		pNodo=NULL;
+	}
+    return pNodo;
 }
 
 /** \brief  Permite realizar el test de la funcion getNode la cual es privada
@@ -314,8 +316,7 @@ int ll_clear(LinkedList* this)
 
     if(this != NULL)
     {
-    	returnAux=0;
-    	for(i=len;ll_len(this) != 0;i--)
+    	for(i=len;i<len;i--)
     	{
     		ll_remove(this,i);
     	}
@@ -326,6 +327,7 @@ int ll_clear(LinkedList* this)
     }
     return returnAux;
 }
+
 
 /** \brief Elimina todos los elementos de la lista y la lista
  *
@@ -717,12 +719,25 @@ int ll_sort(LinkedList* this, int (*pFunc)(void* ,void*), int order)
     				pNode1=getNode(this,j); // leo el puntero a un nodo
     				pNode2=getNode(this,j+1); // leo puntero al otro nodo
     				RuturnFuncion = pFunc(pNode1->pElement, pNode2->pElement); // llamo a la funcion criterio que me va a devolver una variable del tipo int (-1/0/1)
-    				if((order == 1 && RuturnFuncion == 1) || (order == 0 && RuturnFuncion == -1))
+    				if(order == 1)
     				{
+    					if(RuturnFuncion == 1)
+    					{
     						FlagSwap=1;
     						auxElemento=pNode1->pElement;  // hago al swap
     						pNode1->pElement=pNode2->pElement;
     						pNode2->pElement=auxElemento;
+    					}
+    				}
+    				if(order == 0)
+    				{
+    					if(RuturnFuncion == -1)
+    					{
+    						FlagSwap=1;
+    						auxElemento=pNode2->pElement;  // hago al swap
+    						pNode2->pElement=pNode1->pElement;
+    						pNode1->pElement=auxElemento;
+    					}
     				}
     			}
     		len --;
@@ -736,6 +751,7 @@ int ll_sort(LinkedList* this, int (*pFunc)(void* ,void*), int order)
 
     return returnAux;
 }
+
 
 // map recorrer arraylist, y le va a pasar toda la lista a una funcion que recibe de parametro.
 // reduce recibe lista y funcion criterio (recibe un solo elemento) devuelve 0 o 1, si devuelve verdadero saca de la lista, y sino lo deja.
